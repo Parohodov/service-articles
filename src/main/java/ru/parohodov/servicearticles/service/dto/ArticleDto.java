@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.parohodov.servicearticles.datasource.entity.Article;
-
 import java.util.Date;
 
 /**

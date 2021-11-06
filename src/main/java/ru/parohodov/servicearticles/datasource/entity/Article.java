@@ -3,10 +3,7 @@ package ru.parohodov.servicearticles.datasource.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Date;
 
 /**
@@ -14,7 +11,6 @@ import java.sql.Date;
  */
 @Data
 @NoArgsConstructor
-//@Builder
 @Entity
 public class Article {
     @Id
@@ -24,12 +20,14 @@ public class Article {
     private String archivePath;
     private Long authorId;
     private String theme;
-    private Date uploadDate;
+//    private Date uploadDate;
+    private long uploadDate;
 
-    public Article(String title, String archivePath, Long authorId, String theme) {
+    public Article(String title, String archivePath, Long authorId, String theme, long uploadTime) {
         this.title = title;
         this.archivePath = archivePath;
         this.authorId = authorId;
         this.theme = theme;
+        this.uploadDate = uploadTime;
     }
 }
