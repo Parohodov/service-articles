@@ -7,9 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories
 public class ServiceArticlesApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(ServiceArticlesApplication.class, args);
 	}
-
 }
