@@ -54,6 +54,10 @@ public class ArticleService {
         return new ArticleDto(articleRepository.save(newArticle.toEntity()));
     }
 
+    public void deleteById(long id) {
+        articleRepository.deleteById(id);
+    }
+
     @PostConstruct
     public void populateDataBase() throws InterruptedException {
         for (int i = 1; i <= 10; i++) {

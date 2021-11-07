@@ -13,7 +13,7 @@ import ru.parohodov.servicearticles.exception.*;
 /**
  * @author Parohodov
  */
-@ControllerAdvice
+//@ControllerAdvice
 public class ExceptionHandlerController {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

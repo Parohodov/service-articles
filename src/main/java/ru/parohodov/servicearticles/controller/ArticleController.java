@@ -1,11 +1,19 @@
 package ru.parohodov.servicearticles.controller;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import ru.parohodov.servicearticles.exception.ArticleAlreadyExistsException;
+import ru.parohodov.servicearticles.exception.ArticleNotFoundException;
 import ru.parohodov.servicearticles.service.ArticleService;
+import ru.parohodov.servicearticles.service.dto.ArticleDto;
+
+import java.util.List;
 
 /**
  * @author Parohodov
@@ -27,40 +35,68 @@ import ru.parohodov.servicearticles.service.ArticleService;
  * TODO: Authentication
  */
 @RequiredArgsConstructor
-@RestController
+//@RestController
+@Controller
 @RequestMapping("/articles")
 public class ArticleController {
     private final ArticleService articleService;
 
-//    @GetMapping({"", "/"})
-//    public String fetchALl(Model model) {
-//        List<ArticleDto> list = articleService.getAllArticles();
-//        model.addAttribute("articles", list);
-//        return "/articles";
-//    }
-
     @GetMapping({"", "/"})
     @ResponseStatus(HttpStatus.OK)
-    public ModelAndView fetchAll(ModelAndView modelAndView) {
+    public ModelAndView fetchALl(ModelAndView modelAndView) {
+        try {
+            modelAndView.addObject("articles", articleService.getAllArticles());
+        } catch (RuntimeException e) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        modelAndView.setStatus(HttpStatus.OK);
         modelAndView.setViewName("/articles");
-        modelAndView.addObject("articles", articleService.getAllArticles());
         return modelAndView;
     }
 
     @GetMapping("/{id}")
     public ModelAndView fetchById(@PathVariable("id") long id, ModelAndView modelAndView) {
+        try {
+            modelAndView.addObject("article", articleService.getArticleById(id));
+
+        } catch (ArticleNotFoundException e) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, e.getMessage());
+        }
+        modelAndView.setStatus(HttpStatus.OK);
         modelAndView.setViewName("/article");
-        modelAndView.addObject("article", articleService.getArticleById(id));
         return modelAndView;
     }
 
     @PostMapping({"", "/"})
-    public String create() {
-        return "redirect:/templates/articles";
+    public ModelAndView create(@ModelAttribute ArticleDto newArticle, ModelAndView modelAndView) {
+        try {
+            articleService.saveArticle(newArticle);
+        } catch (ArticleAlreadyExistsException e) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.CONFLICT, e.getMessage());
+        }
+        modelAndView.setStatus(HttpStatus.CREATED);
+        modelAndView.setViewName("redirect:/template/articles");
+        return modelAndView;
     }
 
     @DeleteMapping("/{id}")
-    public String delete() {
+    public String delete(@PathVariable("id") long id) {
+        articleService.deleteById(id);
         return "redirect:/templates/articles";
+    }
+
+    private ModelAndView makeErrorModelAndView(ModelAndView modelAndView, HttpStatus httpStatus, String errorMessage) {
+        modelAndView.setStatus(HttpStatus.NOT_FOUND);
+        // FIXME: need to return redirect:
+        modelAndView.setViewName("/error");
+        modelAndView.addObject("status", new ErrorDto(httpStatus.toString()));
+        modelAndView.addObject("message", new ErrorDto(errorMessage));
+        return modelAndView;
+    }
+
+    @Data
+    @AllArgsConstructor
+    public class ErrorDto {
+        private String message;
     }
 }
