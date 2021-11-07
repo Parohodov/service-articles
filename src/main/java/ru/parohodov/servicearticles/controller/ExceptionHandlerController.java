@@ -3,9 +3,10 @@ package ru.parohodov.servicearticles.controller;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 import ru.parohodov.servicearticles.exception.*;
 
@@ -15,68 +16,50 @@ import ru.parohodov.servicearticles.exception.*;
 @ControllerAdvice
 public class ExceptionHandlerController {
     @ExceptionHandler(RuntimeException.class)
-    public ModelAndView handleRuntimeException(RuntimeException e, ModelAndView modelAndView) {
-        modelAndView.setViewName("/error");
-        setErrorMessage(modelAndView, e.getMessage());
-        modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        return modelAndView;
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ErrorDto handleRuntimeException(RuntimeException e) {
+        return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler(OpenFileFailedException.class)
-    public ModelAndView handleOpenFileFailedException(OpenFileFailedException e, ModelAndView modelAndView) {
-        modelAndView.setViewName("/error");
-        setErrorMessage(modelAndView, e.getMessage());
-        modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        return modelAndView;
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ErrorDto handleOpenFileFailedException(OpenFileFailedException e) {
+        return new ErrorDto(e.getMessage());
     }
 
-//    @ExceptionHandler(ArticleNotFoundException.class)
-//    public ModelAndView handleArticleNotFoundException(ArticleNotFoundException e, ModelAndView modelAndView) {
-//        modelAndView.setViewName("/error");
-//        setErrorMessage(modelAndView, e.getMessage());
-//        modelAndView.setStatus(HttpStatus.NOT_FOUND);
-//        return modelAndView;
-//    }
-
     @ExceptionHandler(ArticleNotFoundException.class)
-    public String handleArticleNotFoundException(ArticleNotFoundException e) {
-        return e.getMessage();
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public ErrorDto handleArticleNotFoundException(ArticleNotFoundException e) {
+        return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler(ArticleAlreadyExistsException.class)
-    public ModelAndView handleArticleAlreadyExistsException(ArticleAlreadyExistsException e, ModelAndView modelAndView) {
-        modelAndView.setViewName("/error");
-        setErrorMessage(modelAndView, e.getMessage());
-        modelAndView.setStatus(HttpStatus.CONFLICT);
-        return modelAndView;
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ErrorDto handleArticleAlreadyExistsException(ArticleAlreadyExistsException e, ModelAndView modelAndView) {
+        return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler(ArticleFormatException.class)
-    public ModelAndView handleArticleFormatException(ArticleFormatException e, ModelAndView modelAndView) {
-        modelAndView.setViewName("/error");
-        setErrorMessage(modelAndView, e.getMessage());
-        modelAndView.setStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-        return modelAndView;
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ResponseBody
+    public ErrorDto handleArticleFormatException(ArticleFormatException e, ModelAndView modelAndView) {
+        return new ErrorDto(e.getMessage());
     }
 
     @ExceptionHandler(FileFormatException.class)
-    public ModelAndView handleFileFormatException(FileFormatException e, ModelAndView modelAndView) {
-        modelAndView.setViewName("/error");
-        setErrorMessage(modelAndView, e.getMessage());
-        modelAndView.setStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-        return modelAndView;
-    }
-
-    private void setErrorMessage(ModelAndView modelAndView, String message) {
-        ErrorDto errorDto = new ErrorDto(message);
-        modelAndView.addObject("errormessage", errorDto);
-
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    @ResponseBody
+    public ErrorDto handleFileFormatException(FileFormatException e, ModelAndView modelAndView) {
+        return new ErrorDto(e.getMessage());
     }
 
     @Data
     @AllArgsConstructor
     public class ErrorDto {
-
         private String message;
     }
 }

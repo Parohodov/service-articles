@@ -49,7 +49,7 @@ public class ArticleService {
         // TODO: Open file, read title etc
         Optional<Article> result = articleRepository.findByTitle(newArticle.getTitle());
         if (result.isPresent()) {
-            throw new ArticleAlreadyExistsException("Article %s already exists: " + newArticle.getTitle());
+            throw new ArticleAlreadyExistsException("Article already exists: " + newArticle.getTitle());
         }
         return new ArticleDto(articleRepository.save(newArticle.toEntity()));
     }
