@@ -19,7 +19,6 @@ public class ArticleDto {
     private long id;
     private String title;
     private String archivePath;
-    private Long authorId;
     private String subject;
     private Date uploadDate;
     private String content;

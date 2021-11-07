@@ -7,12 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.parohodov.servicearticles.exception.ArticleAlreadyExistsException;
 import ru.parohodov.servicearticles.exception.ArticleNotFoundException;
+import ru.parohodov.servicearticles.exception.StorageException;
 import ru.parohodov.servicearticles.service.ArticleService;
+import ru.parohodov.servicearticles.service.FileUploadService;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
 
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -40,8 +44,9 @@ import java.util.List;
 @RequestMapping("/articles")
 public class ArticleController {
     private final ArticleService articleService;
+    private final FileUploadService uploadService;
 
-    @GetMapping({"", "/"})
+    @GetMapping( "/")
     @ResponseStatus(HttpStatus.OK)
     public ModelAndView fetchALl(ModelAndView modelAndView) {
         try {
@@ -59,18 +64,21 @@ public class ArticleController {
         try {
             modelAndView.addObject("article", articleService.getArticleById(id));
 
-        } catch (ArticleNotFoundException e) {
-            return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (StorageException se) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, se.getMessage());
+        } catch (ArticleNotFoundException anfe) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, anfe.getMessage());
         }
         modelAndView.setStatus(HttpStatus.OK);
         modelAndView.setViewName("/article");
         return modelAndView;
     }
 
-    @PostMapping({"", "/"})
-    public ModelAndView create(@ModelAttribute ArticleDto newArticle, ModelAndView modelAndView) {
+    @PostMapping( {"", "/"})
+    public ModelAndView create(@RequestParam("file") MultipartFile fileName, ModelAndView modelAndView) {
         try {
-            articleService.saveArticle(newArticle);
+            ArticleDto articleDto = uploadService.store(fileName);
+            articleService.saveArticle(articleDto);
         } catch (ArticleAlreadyExistsException e) {
             return makeErrorModelAndView(modelAndView, HttpStatus.CONFLICT, e.getMessage());
         }
@@ -84,6 +92,8 @@ public class ArticleController {
         articleService.deleteById(id);
         return "redirect:/templates/articles";
     }
+
+    //------------------------------------------------------------------------------------------------------------------
 
     private ModelAndView makeErrorModelAndView(ModelAndView modelAndView, HttpStatus httpStatus, String errorMessage) {
         modelAndView.setStatus(HttpStatus.NOT_FOUND);
