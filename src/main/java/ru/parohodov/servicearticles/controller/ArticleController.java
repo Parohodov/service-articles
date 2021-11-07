@@ -11,12 +11,13 @@ import java.util.List;
 /**
  * @author Parohodov
  *
- * TODO Deploying
- * TODO Exceptions
- * TODO RestController
- * TODO Logging
- * TODO Bean Validation
- * TODO Uploading files
+ * TODO: RestController
+ * TODO: Uploading files
+ * TODO: Exception handling
+ * TODO: Filters for DB (?)
+ * TODO: Logging (?)
+ * TODO: Bean Validation (?)
+ * TODO: Deploying
  */
 @RequiredArgsConstructor
 @Controller
