@@ -2,16 +2,10 @@ package ru.parohodov.servicearticles.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import ru.parohodov.servicearticles.service.dto.ArticleDto;
 import ru.parohodov.servicearticles.service.ArticleService;
-
-import java.net.http.HttpResponse;
-import java.util.List;
 
 /**
  * @author Parohodov
@@ -21,13 +15,15 @@ import java.util.List;
  * DONE: small ui
  * TODO: RestController
  * TODO: Uploading files
- * TODO: Exception handling
+ * DONE: Exception handling
+ * TODO: Normal UI
  * TODO: Deploying
+ * TODO: tests
  * TODO: Filters for DB (?)
  * TODO: Logging (?)
  * TODO: Bean Validation (?)
  * TODO: Paging
- * TODO: tests
+ * TODO: Entity To DTO Conversion
  * TODO: Authentication
  */
 @RequiredArgsConstructor
@@ -44,17 +40,18 @@ public class ArticleController {
 //    }
 
     @GetMapping({"", "/"})
+    @ResponseStatus(HttpStatus.OK)
     public ModelAndView fetchAll(ModelAndView modelAndView) {
         modelAndView.setViewName("/articles");
         modelAndView.addObject("articles", articleService.getAllArticles());
-        modelAndView.setStatus(HttpStatus.OK);
         return modelAndView;
     }
 
     @GetMapping("/{id}")
-    public String fetchById(@PathVariable("id") long id, Model model) {
-        model.addAttribute("article", articleService.getArticleById(id));
-        return "/article";
+    public ModelAndView fetchById(@PathVariable("id") long id, ModelAndView modelAndView) {
+        modelAndView.setViewName("/article");
+        modelAndView.addObject("article", articleService.getArticleById(id));
+        return modelAndView;
     }
 
     @PostMapping({"", "/"})
