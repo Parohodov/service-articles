@@ -2,6 +2,7 @@ package ru.parohodov.servicearticles.service;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.parohodov.servicearticles.exception.ArticleAlreadyExistsException;
 import ru.parohodov.servicearticles.exception.ArticleNotFoundException;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
 import ru.parohodov.servicearticles.datasource.entity.Article;
@@ -31,28 +32,28 @@ public class ArticleService {
     public List<ArticleDto> getAllArticles() {
         Iterable<Article> all = articleRepository.findAll(Sort.by(Sort.Direction.DESC, "uploadDate"));
         List<ArticleDto> articles = new ArrayList<>();
-        all.forEach(a -> articles.add(ArticleDto.builder()
-                .id(a.getId())
-                .title(a.getTitle())
-                .theme(a.getTheme())
-                .uploadDate(new Date(a.getUploadDate()))
-                .build()));
+        all.forEach(article -> articles.add(new ArticleDto(article)));
         return articles;
     }
 
     public ArticleDto getArticleById(long id) {
         Optional<Article> result = articleRepository.findById(id);
-        if (result.isPresent()) {
-            // Get url, read file for content and put title and content in a Dto
-            Article article = result.get();
-            return ArticleDto.builder()
-                    .title(article.getTitle())
-                    .theme(article.getTheme())
-                    .content("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")
-                    .build();
-        } else {
-            throw new ArticleNotFoundException();
+        if (result.isEmpty()) {
+            throw new ArticleNotFoundException("Article not found");
+
         }
+        // Get url, read file for content and put title and content in a Dto
+        Article article = result.get();
+        return new ArticleDto(article);
+    }
+
+    public ArticleDto saveArticle(ArticleDto newArticle) {
+        // TODO: Open file, read title etc
+        Optional<Article> result = articleRepository.findByTitle(newArticle.getTitle());
+        if (result.isPresent()) {
+            throw new ArticleAlreadyExistsException("Article %s already exists: " + newArticle.getTitle());
+        }
+        return new ArticleDto(articleRepository.create(newArticle.toEntity()));
     }
 
     @PostConstruct

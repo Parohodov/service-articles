@@ -3,10 +3,7 @@ package ru.parohodov.servicearticles.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
 import ru.parohodov.servicearticles.service.ArticleService;
 import java.util.List;
@@ -19,7 +16,6 @@ import java.util.List;
  * TODO RestController
  * TODO Logging
  * TODO Bean Validation
- * TODO Authorization
  * TODO Uploading files
  */
 @RequiredArgsConstructor
@@ -43,6 +39,11 @@ public class ArticleController {
 
     @PostMapping({"", "/"})
     public String create() {
+        return "redirect:/templates/articles";
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete() {
         return "redirect:/templates/articles";
     }
 }

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.parohodov.servicearticles.datasource.entity.Article;
+
 import java.util.Date;
 
 /**
@@ -18,7 +20,28 @@ public class ArticleDto {
     private String title;
     private String archivePath;
     private Long authorId;
-    private String theme;
+    private String subject;
     private Date uploadDate;
     private String content;
+
+    public ArticleDto(Article entity) {
+        this.id = entity.getId();
+        this.title = entity.getTitle();
+        this.archivePath = entity.getArchivePath();
+        this.authorId = entity.getAuthorId();
+        this.subject = entity.getSubject();
+        this.uploadDate = new Date(entity.getUploadDate());
+        // TODO: define file content somehow
+        this.content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    }
+
+    public Article toEntity() {
+        return new Article(
+                this.title,
+                this.archivePath,
+                this.authorId,
+                this.subject,
+                this.uploadDate.getTime()
+        );
+    }
 }
