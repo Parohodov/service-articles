@@ -10,16 +10,14 @@ import ru.parohodov.servicearticles.datasource.repository.ArticleRepository;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @author Parohodov
  *
- * TODO JPA Criteria - filtering
- * TODO Paging
- * TODO Transactional
+ * TODO: JPA Criteria, filter
+ * FIXME: Transactional
  */
 @Service
 public class ArticleService {
@@ -53,17 +51,16 @@ public class ArticleService {
         if (result.isPresent()) {
             throw new ArticleAlreadyExistsException("Article %s already exists: " + newArticle.getTitle());
         }
-        return new ArticleDto(articleRepository.create(newArticle.toEntity()));
+        return new ArticleDto(articleRepository.save(newArticle.toEntity()));
     }
 
     @PostConstruct
     public void populateDataBase() throws InterruptedException {
         for (int i = 1; i <= 10; i++) {
-            Thread.sleep(1000);
+//            Thread.sleep(1000);
             articleRepository.save(new Article(
                     String.format("Title %03d",  i),
                     "path",
-                    (long) (i % 2 + 1),
                     String.format("Theme %03d",  i),
                     new java.util.Date().getTime()
                     )

@@ -11,5 +11,4 @@ import java.util.Optional;
  */
 public interface ArticleRepository extends PagingAndSortingRepository<Article, Long> {
     Optional<Article> findByTitle(String title);
-    Article create(Article entity);
 }

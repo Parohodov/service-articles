@@ -17,15 +17,12 @@ public class Article {
     private Long id;
     private String title;
     private String archivePath;
-    private Long authorId;
     private String subject;
-//    private Date uploadDate;
     private long uploadDate;
 
-    public Article(String title, String archivePath, Long authorId, String subject, long uploadTime) {
+    public Article(String title, String archivePath, String subject, long uploadTime) {
         this.title = title;
         this.archivePath = archivePath;
-        this.authorId = authorId;
         this.subject = subject;
         this.uploadDate = uploadTime;
     }

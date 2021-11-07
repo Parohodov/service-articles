@@ -28,10 +28,9 @@ public class ArticleDto {
         this.id = entity.getId();
         this.title = entity.getTitle();
         this.archivePath = entity.getArchivePath();
-        this.authorId = entity.getAuthorId();
         this.subject = entity.getSubject();
         this.uploadDate = new Date(entity.getUploadDate());
-        // TODO: define file content somehow
+        // TODO: load file content somehow
         this.content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
     }
 
@@ -39,7 +38,6 @@ public class ArticleDto {
         return new Article(
                 this.title,
                 this.archivePath,
-                this.authorId,
                 this.subject,
                 this.uploadDate.getTime()
         );
