@@ -95,42 +95,4 @@ public class FileProcessService {
         }
         return strings;
     }
-
-    private List<String> readZip(MultipartFile file) throws OpenFileFailedException {
-        List<String> lines;
-
-        try (ZipInputStream zin = new ZipInputStream(file.getInputStream())) {
-
-            ZipEntry entry = zin.getNextEntry();
-            if (zin.getNextEntry() != null) {
-                throw new FileFormatException("Wrong archive format");
-            }
-            if (entry.isDirectory()) {
-                throw new FileFormatException("Wrong archive format");
-            }
-            if (!entry.getName().equals(articleFileNameFormat)) {
-                throw new FileFormatException("Wrong archive format");
-            }
-
-            lines = readZipStreamForLines(zin);
-            zin.closeEntry();
-
-        } catch (IOException e) {
-            throw new OpenFileFailedException("File can't be read");
-        }
-        return lines;
-    }
-
-    private List<String> readZipStreamForLines(ZipInputStream zin) throws IOException {
-        List<String> strings = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(zin, StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                strings.add(line);
-            }
-        }
-        return strings;
-    }
-
 }
