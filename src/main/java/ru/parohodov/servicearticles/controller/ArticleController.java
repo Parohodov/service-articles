@@ -21,8 +21,9 @@ import ru.parohodov.servicearticles.service.ArticleService;
  * DONE: Controller
  * DONE: Crud repository
  * DONE: small ui
+ * TODO: fix Exception situation
  * TODO: RestController (?)
- * TODO: Uploading, readind, deleting files
+ * DONE: Uploading, readind, deleting files
  * TODO: PUT (?) - Updating - get upload file date and store it if it's different with original one
  * DONE: Exception handling
  * TODO: Normal UI
@@ -66,7 +67,7 @@ public class ArticleController {
             return makeErrorModelAndView(modelAndView, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
         }
         modelAndView.setStatus(HttpStatus.OK);
-        modelAndView.setViewName("redirect:/error");
+        modelAndView.setViewName("/article");
         return modelAndView;
     }
 
@@ -86,9 +87,10 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") long id) {
-        articleService.deleteById(id);
-        return "redirect:/articles";
+    public ModelAndView delete(@PathVariable("id") long id, ModelAndView modelAndView) {
+        modelAndView.setStatus(HttpStatus.OK);
+        modelAndView.setViewName("redirect:/articles");
+        return modelAndView;
     }
 
     //------------------------------------------------------------------------------------------------------------------
