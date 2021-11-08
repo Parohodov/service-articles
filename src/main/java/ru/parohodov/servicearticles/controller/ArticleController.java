@@ -10,10 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.parohodov.servicearticles.exception.ArticleAlreadyExistsException;
 import ru.parohodov.servicearticles.exception.ArticleNotFoundException;
-import ru.parohodov.servicearticles.exception.StorageException;
 import ru.parohodov.servicearticles.service.ArticleService;
-import ru.parohodov.servicearticles.service.FileProcessService;
-import ru.parohodov.servicearticles.service.dto.ArticleDto;
 
 /**
  * @author Parohodov
@@ -40,7 +37,6 @@ import ru.parohodov.servicearticles.service.dto.ArticleDto;
 @RequestMapping("/articles")
 public class ArticleController {
     private final ArticleService articleService;
-    private final FileProcessService fileProcessService;
 
     @GetMapping( "/")
     @ResponseStatus(HttpStatus.OK)
@@ -59,9 +55,6 @@ public class ArticleController {
     public ModelAndView fetchById(@PathVariable("id") long id, ModelAndView modelAndView) {
         try {
             modelAndView.addObject("article", articleService.getArticleById(id));
-
-        } catch (StorageException se) {
-            return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, se.getMessage());
         } catch (ArticleNotFoundException anfe) {
             return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, anfe.getMessage());
         }
@@ -73,8 +66,7 @@ public class ArticleController {
     @PostMapping( {"", "/"})
     public ModelAndView create(@RequestParam("file") MultipartFile fileName, ModelAndView modelAndView) {
         try {
-            ArticleDto articleDto = fileProcessService.processFile(fileName);
-            articleService.saveArticle(articleDto);
+            articleService.saveArticle(fileName);
         } catch (ArticleAlreadyExistsException e) {
             return makeErrorModelAndView(modelAndView, HttpStatus.CONFLICT, e.getMessage());
         }

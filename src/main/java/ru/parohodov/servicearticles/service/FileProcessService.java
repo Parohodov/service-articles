@@ -36,20 +36,15 @@ public class FileProcessService {
         rooLocation = Paths.get(properties.getLocation());
     }
 
-    public ArticleDto processFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new FileFormatException("Archive is empty");
-        }
+    public ArticleDto processFile(Path path) {
 
-        Path fileName = Paths.get(file.getOriginalFilename());
-        String fileExtension = FilenameUtils.getExtension(fileName.toString());
+        String fileExtension = FilenameUtils.getExtension(path.toString());
         if (!fileExtension.equals("zip")) {
             throw new FileFormatException("File is not a zip archive");
         }
 
-        // TODO: open and read file
-        // if strings.length <=1 --> FileFormatException("Body is missing")
-        List<String> lines = readZipFile(file);
+        List<String> lines = readZipFile(path.toFile());
+
         if (lines == null) {
             throw new FileFormatException("Something went wrong");
         }
@@ -59,14 +54,10 @@ public class FileProcessService {
                 .build();
     }
 
-    private List<String> readZipFile(MultipartFile file) {
+    private List<String> readZipFile(File file) {
         List<String> lines;
 
-        ZipFile zipFile = null;
-        try {
-            File tempFile = File.createTempFile(rooLocation.toString(), null);
-            file.transferTo(tempFile);
-            zipFile = new ZipFile(tempFile);
+        try (ZipFile zipFile = new ZipFile(file)) {
 
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             ZipEntry entry = entries.nextElement();
@@ -78,7 +69,7 @@ public class FileProcessService {
                 throw new FileFormatException("Wrong archive format");
             }
 
-            lines = readZipForLines(zipFile, entry);
+            lines = readZipFileForLines(zipFile, entry);
 
             if (lines.size() == 0) {
                 throw new FileFormatException("File is empty");
@@ -89,19 +80,12 @@ public class FileProcessService {
             // TODO: Close entry?
         } catch (IOException e) {
             throw new FileFormatException("Can not open archive");
-        } finally {
-            if (zipFile != null) {
-                try {
-                    zipFile.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+
         return lines;
     }
 
-    private List<String> readZipForLines(ZipFile zipFile, ZipEntry entry) throws IOException {
+    private List<String> readZipFileForLines(ZipFile zipFile, ZipEntry entry) throws IOException {
         List<String> strings = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new InputStreamReader(zipFile.getInputStream(entry), StandardCharsets.UTF_8))) {
             String line;
@@ -112,24 +96,41 @@ public class FileProcessService {
         return strings;
     }
 
-    private ArrayList<String> readZip(MultipartFile file) {
+    private List<String> readZip(MultipartFile file) throws OpenFileFailedException {
+        List<String> lines;
+
         try (ZipInputStream zin = new ZipInputStream(file.getInputStream())) {
+
             ZipEntry entry = zin.getNextEntry();
+            if (zin.getNextEntry() != null) {
+                throw new FileFormatException("Wrong archive format");
+            }
             if (entry.isDirectory()) {
                 throw new FileFormatException("Wrong archive format");
             }
             if (!entry.getName().equals(articleFileNameFormat)) {
                 throw new FileFormatException("Wrong archive format");
             }
-            if (zin.getNextEntry() != null) {
-                throw new FileFormatException("Wrong archive format");
-            }
+
+            lines = readZipStreamForLines(zin);
             zin.closeEntry();
 
         } catch (IOException e) {
             throw new OpenFileFailedException("File can't be read");
         }
-        return null;
+        return lines;
+    }
+
+    private List<String> readZipStreamForLines(ZipInputStream zin) throws IOException {
+        List<String> strings = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(zin, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                strings.add(line);
+            }
+        }
+        return strings;
     }
 
 }
