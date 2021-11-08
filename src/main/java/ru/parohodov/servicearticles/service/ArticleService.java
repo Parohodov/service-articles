@@ -46,11 +46,12 @@ public class ArticleService {
     }
 
     public ArticleDto saveArticle(ArticleDto newArticle) {
-        // TODO: Open file, read title etc
         Optional<Article> result = articleRepository.findByTitle(newArticle.getTitle());
         if (result.isPresent()) {
             throw new ArticleAlreadyExistsException("Article already exists: " + newArticle.getTitle());
         }
+        // TODO: storage file here
+        // TODO: save to DB here
         return new ArticleDto(articleRepository.save(newArticle.toEntity()));
     }
 

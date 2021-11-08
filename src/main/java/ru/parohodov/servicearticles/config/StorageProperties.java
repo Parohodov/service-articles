@@ -17,4 +17,7 @@ public class StorageProperties {
     @Getter
     @Setter
     private String location;
+    @Getter
+    @Setter
+    private String articleFileName;
 }

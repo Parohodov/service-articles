@@ -19,10 +19,10 @@ import java.util.Date;
  * @author Parohodov
  */
 @Service
-public class FileUploadService {
+class FileStorageService {
     private final Path rootLocation;
 
-    public FileUploadService(StorageProperties properties) {
+    public FileStorageService(StorageProperties properties) {
         rootLocation = Paths.get(properties.getLocation());
     }
 
@@ -43,6 +43,7 @@ public class FileUploadService {
         try (InputStream inputStream = file.getInputStream()) {
             Files.copy(inputStream, destinationFile,
                     StandardCopyOption.REPLACE_EXISTING);
+
             articleDto = ArticleDto.builder()
                     .title("title")
                     .archivePath(destinationFile.toString())

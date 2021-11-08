@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,11 +12,8 @@ import ru.parohodov.servicearticles.exception.ArticleAlreadyExistsException;
 import ru.parohodov.servicearticles.exception.ArticleNotFoundException;
 import ru.parohodov.servicearticles.exception.StorageException;
 import ru.parohodov.servicearticles.service.ArticleService;
-import ru.parohodov.servicearticles.service.FileUploadService;
+import ru.parohodov.servicearticles.service.FileProcessService;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
-
-import java.nio.file.Path;
-import java.util.List;
 
 /**
  * @author Parohodov
@@ -25,7 +21,7 @@ import java.util.List;
  * DONE: Controller
  * DONE: Crud repository
  * DONE: small ui
- * TODO: RestController
+ * TODO: RestController (?)
  * TODO: Uploading files
  * DONE: Exception handling
  * TODO: Normal UI
@@ -44,7 +40,7 @@ import java.util.List;
 @RequestMapping("/articles")
 public class ArticleController {
     private final ArticleService articleService;
-    private final FileUploadService uploadService;
+    private final FileProcessService fileProcessService;
 
     @GetMapping( "/")
     @ResponseStatus(HttpStatus.OK)
@@ -77,7 +73,7 @@ public class ArticleController {
     @PostMapping( {"", "/"})
     public ModelAndView create(@RequestParam("file") MultipartFile fileName, ModelAndView modelAndView) {
         try {
-            ArticleDto articleDto = uploadService.store(fileName);
+            ArticleDto articleDto = fileProcessService.processFile(fileName);
             articleService.saveArticle(articleDto);
         } catch (ArticleAlreadyExistsException e) {
             return makeErrorModelAndView(modelAndView, HttpStatus.CONFLICT, e.getMessage());
