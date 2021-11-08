@@ -10,24 +10,29 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import ru.parohodov.servicearticles.exception.ArticleAlreadyExistsException;
 import ru.parohodov.servicearticles.exception.ArticleNotFoundException;
+import ru.parohodov.servicearticles.exception.FileFormatException;
+import ru.parohodov.servicearticles.exception.StorageException;
 import ru.parohodov.servicearticles.service.ArticleService;
 
 /**
  * @author Parohodov
  *
+ *
  * DONE: Controller
  * DONE: Crud repository
  * DONE: small ui
  * TODO: RestController (?)
- * TODO: Uploading files
+ * TODO: Uploading, readind, deleting files
+ * TODO: PUT (?) - Updating - get upload file date and store it if it's different with original one
  * DONE: Exception handling
  * TODO: Normal UI
  * TODO: Deploying
  * TODO: tests
+ * TODO: Paging
+ * TODO: Article subject
  * TODO: Filters for DB (?)
  * TODO: Logging (?)
  * TODO: Bean Validation (?)
- * TODO: Paging
  * TODO: Entity To DTO Conversion
  * TODO: Authentication
  */
@@ -38,7 +43,7 @@ import ru.parohodov.servicearticles.service.ArticleService;
 public class ArticleController {
     private final ArticleService articleService;
 
-    @GetMapping( "/")
+    @GetMapping( {"", "/"})
     @ResponseStatus(HttpStatus.OK)
     public ModelAndView fetchALl(ModelAndView modelAndView) {
         try {
@@ -55,11 +60,13 @@ public class ArticleController {
     public ModelAndView fetchById(@PathVariable("id") long id, ModelAndView modelAndView) {
         try {
             modelAndView.addObject("article", articleService.getArticleById(id));
-        } catch (ArticleNotFoundException anfe) {
-            return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, anfe.getMessage());
+        } catch (ArticleNotFoundException e) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (StorageException | FileFormatException e) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
         }
         modelAndView.setStatus(HttpStatus.OK);
-        modelAndView.setViewName("/article");
+        modelAndView.setViewName("redirect:/error");
         return modelAndView;
     }
 
@@ -69,23 +76,25 @@ public class ArticleController {
             articleService.saveArticle(fileName);
         } catch (ArticleAlreadyExistsException e) {
             return makeErrorModelAndView(modelAndView, HttpStatus.CONFLICT, e.getMessage());
+        } catch (StorageException | FileFormatException e) {
+            return makeErrorModelAndView(modelAndView, HttpStatus.UNSUPPORTED_MEDIA_TYPE, e.getMessage());
         }
+
         modelAndView.setStatus(HttpStatus.CREATED);
-        modelAndView.setViewName("redirect:/template/articles");
+        modelAndView.setViewName("redirect:/articles");
         return modelAndView;
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") long id) {
         articleService.deleteById(id);
-        return "redirect:/templates/articles";
+        return "redirect:/articles";
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
     private ModelAndView makeErrorModelAndView(ModelAndView modelAndView, HttpStatus httpStatus, String errorMessage) {
-        modelAndView.setStatus(HttpStatus.NOT_FOUND);
-        // FIXME: need to return redirect:
+        modelAndView.setStatus(httpStatus);
         modelAndView.setViewName("/error");
         modelAndView.addObject("status", new ErrorDto(httpStatus.toString()));
         modelAndView.addObject("message", new ErrorDto(errorMessage));

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.parohodov.servicearticles.exception.ArticleAlreadyExistsException;
 import ru.parohodov.servicearticles.exception.ArticleNotFoundException;
+import ru.parohodov.servicearticles.exception.FileFormatException;
+import ru.parohodov.servicearticles.exception.StorageException;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
 import ru.parohodov.servicearticles.datasource.entity.Article;
 import ru.parohodov.servicearticles.datasource.repository.ArticleRepository;
@@ -13,6 +15,7 @@ import ru.parohodov.servicearticles.datasource.repository.ArticleRepository;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,14 +23,18 @@ import java.util.Optional;
 /**
  * @author Parohodov
  *
+ * As long as H2 works runtime all data is retrieved from file system
+ * while database keeps id's for a list, files url's and subject
+ * It works because all data needed can be retrieved from file properies
+ *
  * TODO: JPA Criteria, filter
  * FIXME: Transactional
  */
 @RequiredArgsConstructor
 @Service
 public class ArticleService {
-    private final FileStorageService storageFile;
-    private final FileProcessService processFile;
+    private final FileStorageService storageService;
+    private final FileProcessService fileProcessService;
     private final ArticleRepository articleRepository;
 
     public List<ArticleDto> getAllArticles() {
@@ -45,22 +52,24 @@ public class ArticleService {
         }
         // Get url, read file for content and put title and content in a Dto
         Article article = result.get();
-        return new ArticleDto(article);
+        ArticleDto articleDto = fileProcessService.readFile(Paths.get(article.getArchivePath()));
+        articleDto.setId(id); // It needs id this time
+        return articleDto;
     }
 
-   public ArticleDto saveArticle(MultipartFile file) {
+    public ArticleDto saveArticle(MultipartFile file) {
         // First storage the file (to be able to use ZipFile)
-        Path storedFile = storageFile.store(file);
+        Path storedFile;
 
-        ArticleDto articleDto = processFile.processFile(storedFile);
+        storedFile = storageService.store(file);
+
+        ArticleDto articleDto = fileProcessService.readFile(storedFile);
 
         Optional<Article> result = articleRepository.findByTitle(articleDto.getTitle());
         if (result.isPresent()) {
-            storageFile.delete(storedFile);
+            storageService.delete(storedFile);
             throw new ArticleAlreadyExistsException("Article already exists: " + articleDto.getTitle());
         }
-
-        articleDto.setArchivePath(storedFile.toString());
         saveToDataBase(articleDto.toEntity());
 
         result = articleRepository.findByTitle(articleDto.getTitle());
@@ -68,7 +77,7 @@ public class ArticleService {
             throw new ArticleNotFoundException("Something went wrong");
         }
 
-        return new ArticleDto(result.get());
+        return fileProcessService.readFile(Paths.get(result.get().getArchivePath()));
     }
 
     @Transactional
@@ -78,20 +87,20 @@ public class ArticleService {
 
     @Transactional
     public void deleteById(long id) {
-        articleRepository.deleteById(id);
+        Optional<Article> result = articleRepository.findById(id);
+        if (result.isPresent()) {
+            Path path = Paths.get(result.get().getArchivePath());
+            storageService.delete(path);
+            articleRepository.deleteById(id);
+        }
     }
 
     @PostConstruct
-    public void populateDataBase() {
-        for (int i = 1; i <= 10; i++) {
-//            Thread.sleep(1000);
-            articleRepository.save(new Article(
-                    String.format("Title %03d",  i),
-                    "path",
-                    String.format("Theme %03d",  i),
-                    new java.util.Date().getTime()
-                    )
-            );
+    private void populateDataBase() {
+        List<Path> files = storageService.getAllFiles();
+        for (Path file : files) {
+            ArticleDto articleDto = fileProcessService.readFile(file);
+            articleRepository.save(articleDto.toEntity());
         }
     }
 }

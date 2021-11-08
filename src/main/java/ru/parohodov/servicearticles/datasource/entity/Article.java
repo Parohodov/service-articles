@@ -20,10 +20,10 @@ public class Article {
     private String subject;
     private long uploadDate;
 
-    public Article(String title, String archivePath, String subject, long uploadTime) {
+    public Article(String title, String archivePath, String subject, long uploadDate) {
         this.title = title;
         this.archivePath = archivePath;
         this.subject = subject;
-        this.uploadDate = uploadTime;
+        this.uploadDate = uploadDate;
     }
 }

@@ -2,70 +2,70 @@ package ru.parohodov.servicearticles.service;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import ru.parohodov.servicearticles.config.StorageProperties;
 import ru.parohodov.servicearticles.exception.FileFormatException;
-import ru.parohodov.servicearticles.exception.OpenFileFailedException;
+import ru.parohodov.servicearticles.exception.StorageException;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  * @author Parohodov
+ *
+ * This service works with what is inside the archives
  */
 @Service
 public class FileProcessService {
-    private final String articleFileNameFormat;
-    private final Path rooLocation;
+    private final String predefinedFileName;
 
     public FileProcessService(StorageProperties properties) {
-        articleFileNameFormat = properties.getArticleFileName();
-        rooLocation = Paths.get(properties.getLocation());
+        predefinedFileName = properties.getArticleFileName();
     }
 
-    public ArticleDto processFile(Path path) {
+    public ArticleDto readFile(Path path) {
 
-        String fileExtension = FilenameUtils.getExtension(path.toString());
-        if (!fileExtension.equals("zip")) {
-            throw new FileFormatException("File is not a zip archive");
-        }
-
-        List<String> lines = readZipFile(path.toFile());
-
+        List<String> lines = readZipFile(path);
         if (lines == null) {
             throw new FileFormatException("Something went wrong");
         }
+
+        String title = lines.get(0);
+        lines.remove(0);
+        String content = lines.stream().collect(Collectors.joining(System.lineSeparator()));
+
         return ArticleDto.builder()
-                .title(lines.get(0))
-                .uploadDate(new Date())
+                .title(title)
+                .archivePath(path.toString())
+                .subject("?")
+                .uploadDate(getFileCreationTime(path))
+                .content(content)
                 .build();
     }
 
-    private List<String> readZipFile(File file) {
+    private List<String> readZipFile(Path path) {
         List<String> lines;
 
-        try (ZipFile zipFile = new ZipFile(file)) {
-
+        try (ZipFile zipFile = new ZipFile(path.toFile())) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             ZipEntry entry = entries.nextElement();
             if (entries.hasMoreElements()) {
                 throw new FileFormatException("Wrong archive format");
             }
 
-            if (!entry.getName().equals(articleFileNameFormat)) {
+            if (!entry.getName().equals(predefinedFileName)) {
                 throw new FileFormatException("Wrong archive format");
             }
 
@@ -77,7 +77,7 @@ public class FileProcessService {
             if (lines.size() == 1) {
                 throw new FileFormatException("Body is missing");
             }
-            // TODO: Close entry?
+            // FIXME: Close entry?
         } catch (IOException e) {
             throw new FileFormatException("Can not open archive");
         }
@@ -94,5 +94,15 @@ public class FileProcessService {
             }
         }
         return strings;
+    }
+
+    private Date getFileCreationTime(Path path) {
+        BasicFileAttributes attr;
+        try {
+            attr = Files.readAttributes(path, BasicFileAttributes.class);
+        } catch (IOException e) {
+            throw new StorageException("Failed to read file");
+        }
+        return new Date(attr.creationTime().toMillis());
     }
 }

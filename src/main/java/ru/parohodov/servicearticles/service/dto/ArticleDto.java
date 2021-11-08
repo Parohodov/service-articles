@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.parohodov.servicearticles.datasource.entity.Article;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -23,16 +24,14 @@ public class ArticleDto {
     private Date uploadDate;
     private String content;
 
+    // This one is need to show work with list
     public ArticleDto(Article entity) {
         this.id = entity.getId();
         this.title = entity.getTitle();
-        this.archivePath = entity.getArchivePath();
-        this.subject = entity.getSubject();
         this.uploadDate = new Date(entity.getUploadDate());
-        // TODO: load file content somehow
-        this.content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
     }
 
+    // FIXME: Use mapping
     public Article toEntity() {
         return new Article(
                 this.title,
