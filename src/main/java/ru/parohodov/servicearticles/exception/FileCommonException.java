@@ -3,8 +3,8 @@ package ru.parohodov.servicearticles.exception;
 /**
  * @author Parohodov
  */
-public class StorageException extends RuntimeException {
-    public StorageException(String message) {
+public class FileCommonException extends RuntimeException {
+    public FileCommonException(String message) {
         super(message);
     }
 }

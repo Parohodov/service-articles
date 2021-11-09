@@ -4,14 +4,16 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.parohodov.servicearticles.config.StorageProperties;
+import ru.parohodov.servicearticles.exception.FileConflictException;
 import ru.parohodov.servicearticles.exception.FileFormatException;
-import ru.parohodov.servicearticles.exception.StorageException;
+import ru.parohodov.servicearticles.exception.FileMissingException;
+import ru.parohodov.servicearticles.exception.FileCommonException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,9 +30,14 @@ public class FileStorageService {
         rootLocation = Paths.get(properties.getLocation());
     }
 
+    /** Stores a given file
+     * @param file - a file to be stored
+     * @return - a Path to a file stored in a file system
+     * @throws - FileMissingException, FileFormatException, FileConflictException, FileCommonException
+     */
     public Path store(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new StorageException("Zip file is empty.");
+            throw new FileMissingException("Zip file is missing");
         }
 
         Path destinationFile = this.rootLocation.resolve(
@@ -39,42 +46,45 @@ public class FileStorageService {
 
         String fileExtension = FilenameUtils.getExtension(destinationFile.toString());
         if (!fileExtension.equals("zip")) {
-            throw new StorageException("File is not a Zip.");
-        }
-
-        if (!destinationFile.getParent().equals(this.rootLocation.toAbsolutePath())) {
-            // This is a security check
-            throw new StorageException("Cannot store zip file outside current directory.");
+            throw new FileFormatException("File is not a Zip: " + file.getOriginalFilename());
         }
 
         try (InputStream inputStream = file.getInputStream()) {
             Files.copy(inputStream, destinationFile);
         } catch (FileAlreadyExistsException e) {
-            throw new StorageException("Zip file with such name already exists.");
+            throw new FileConflictException("Zip file with such name already exists: " + file.getOriginalFilename());
         } catch (IOException e) {
-            throw new StorageException("Failed to store zip file.");
+            throw new FileCommonException("Failed to store zip file: " + file.getOriginalFilename());
         }
         return destinationFile;
     }
 
+    /** Returns a list of file stored in a current storage defined by a rootLocation field
+     * @return - List<Path> - list of files stored in a storage
+     * @throws - FileCommonException
+     */
     public List<Path> getAllFiles() {
         List<Path> files;
         try (Stream<Path> paths = Files.walk(this.rootLocation)) {
             files = paths.filter(Files::isRegularFile).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new StorageException("Failed to get all files");
+            throw new FileCommonException("Failed to get all files.");
         }
         return files;
     }
 
+    /**
+     * Deletes given file
+     * @throws - FileMissingException, FileCommonException
+     */
     public void delete(Path file) {
         try {
             Files.delete(file);
         } catch (NoSuchFileException x) {
-            throw new StorageException("File not found");
+            throw new FileMissingException("File not found: " + file.getFileName());
         } catch (IOException x) {
             // File permission problems are caught here.
-            throw new StorageException("Something went wrong.");
+            throw new FileCommonException("Something went wrong.");
         }
     }
 }

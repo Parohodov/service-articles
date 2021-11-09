@@ -22,17 +22,17 @@ public class ExceptionHandlerController {
         return new ErrorDto(e.getMessage());
     }
 
-    @ExceptionHandler(ArticleNotFoundException.class)
+    @ExceptionHandler(FileMissingException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
-    public ErrorDto handleArticleNotFoundException(ArticleNotFoundException e) {
+    public ErrorDto handleArticleNotFoundException(FileMissingException e) {
         return new ErrorDto(e.getMessage());
     }
 
-    @ExceptionHandler(ArticleAlreadyExistsException.class)
+    @ExceptionHandler(FileConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public ErrorDto handleArticleAlreadyExistsException(ArticleAlreadyExistsException e, ModelAndView modelAndView) {
+    public ErrorDto handleArticleAlreadyExistsException(FileConflictException e, ModelAndView modelAndView) {
         return new ErrorDto(e.getMessage());
     }
 

@@ -6,10 +6,11 @@
 </head>
 <body>
 <div align="center">
+    <h2>Article</h2>
     <h2 th:text="${article.getTitle()}">text</h2>
     <h4 th:text="${article.getSubject()}">text</h4>
     <hr/>
-    <p th:text="${article.getContent()}">text</p>
+    <p th:text="${article.getContent()}" align="left">text</p>
     <hr/>
     <form th:method="DELETE" th:action="@{/articles/{id}(id=${article.getId()})}">
         <input type="submit" value="Delete">

@@ -1,10 +1,10 @@
 package ru.parohodov.servicearticles.service;
 
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import ru.parohodov.servicearticles.config.StorageProperties;
 import ru.parohodov.servicearticles.exception.FileFormatException;
-import ru.parohodov.servicearticles.exception.StorageException;
+import ru.parohodov.servicearticles.exception.FileCommonException;
+import ru.parohodov.servicearticles.exception.FileMissingException;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
 
 import java.io.BufferedReader;
@@ -35,15 +35,19 @@ public class FileProcessService {
         predefinedFileName = properties.getArticleFileName();
     }
 
+    /**
+     * Reads a given PREVIOUSLY STORED file
+     * @param path - a path to a stored file
+     * @return - DTO with id field is zero
+     * @throws - FileFormatException, FileCommonException
+     */
     public ArticleDto readFile(Path path) {
 
         List<String> lines = readZipFile(path);
-        if (lines == null) {
-            throw new FileFormatException("Something went wrong");
-        }
-
         String title = lines.get(0);
         lines.remove(0);
+
+        // FIXME: put to a content a list of lines and create a list of paragraphs to display
         String content = lines.stream().collect(Collectors.joining(System.lineSeparator()));
 
         return ArticleDto.builder()
@@ -61,25 +65,26 @@ public class FileProcessService {
         try (ZipFile zipFile = new ZipFile(path.toFile())) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             ZipEntry entry = entries.nextElement();
+
             if (entries.hasMoreElements()) {
-                throw new FileFormatException("Wrong archive format");
+                throw new FileFormatException("Too much article files inside an archive: " + path.getFileName());
             }
 
             if (!entry.getName().equals(predefinedFileName)) {
-                throw new FileFormatException("Wrong archive format");
+                throw new FileFormatException("Wrong article file name: " + path.getFileName());
             }
 
             lines = readZipFileForLines(zipFile, entry);
 
             if (lines.size() == 0) {
-                throw new FileFormatException("File is empty");
+                throw new FileFormatException("Article file is empty: " + path.getFileName());
             }
             if (lines.size() == 1) {
-                throw new FileFormatException("Body is missing");
+                throw new FileFormatException("Article body is missing, file: " + path.getFileName());
             }
             // FIXME: Close entry?
         } catch (IOException e) {
-            throw new FileFormatException("Can not open archive");
+            throw new FileCommonException("Can not open archive");
         }
 
         return lines;
@@ -101,7 +106,7 @@ public class FileProcessService {
         try {
             attr = Files.readAttributes(path, BasicFileAttributes.class);
         } catch (IOException e) {
-            throw new StorageException("Failed to read file");
+            throw new FileCommonException("Failed to read file time creation");
         }
         return new Date(attr.creationTime().toMillis());
     }

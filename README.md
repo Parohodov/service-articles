@@ -1,3 +1,12 @@
+Deploying (Windows):
+- clone project
+- cd project location
+- mvn clean install (wrapper is included, no maven needs to be installed)
+- copy servicearticles-0.0.1-SNAPSHOT.jar, application properties and an "artilce" directory (or create it) to a directory where a server will be placed
+- java [-Xloggc:log.txt] -jar servicearticles-0.0.1-SNAPSHOT.jar
+- link to localhost:8080/
+
+
 Домашнее задание
 Заказчик - известное печатное новостное издание, которое хочет расширить свою аудиторию за счет публикации новостей так же онлайн.
 
