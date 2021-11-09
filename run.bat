@@ -1,0 +1,1 @@
+java -jar servicearticles-0.0.1-SNAPSHOT.jar
