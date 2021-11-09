@@ -14,11 +14,12 @@
         <div style="display: inline-block">
             <h4 th:text="${article.getTitle()}">title</h4>
         </div>
-        <div style="display: inline-block">
-            <p th:text="${article.getContent()}">article</p>
+        <div th:each="content : ${article.getContent()}">
+            <p th:text="${content.getContent()}">text</p>
         </div>
         <hr/>
     </div>
+    <br/>
     <hr/>
 </div>
 </body>

@@ -6,6 +6,7 @@ import ru.parohodov.servicearticles.exception.FileFormatException;
 import ru.parohodov.servicearticles.exception.FileCommonException;
 import ru.parohodov.servicearticles.exception.FileMissingException;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
+import ru.parohodov.servicearticles.service.dto.ContentDto;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,7 +49,8 @@ public class FileProcessService {
         lines.remove(0);
 
         // FIXME: put to a content a list of lines and create a list of paragraphs to display
-        String content = lines.stream().collect(Collectors.joining(System.lineSeparator()));
+//        String content = lines.stream().collect(Collectors.joining(System.lineSeparator()));
+        List<ContentDto> content = lines.stream().map(ContentDto::new).collect(Collectors.toList());
 
         return ArticleDto.builder()
                 .title(title)

@@ -13,6 +13,7 @@ import ru.parohodov.servicearticles.exception.FileMissingException;
 import ru.parohodov.servicearticles.exception.FileFormatException;
 import ru.parohodov.servicearticles.exception.FileCommonException;
 import ru.parohodov.servicearticles.service.ArticleService;
+import ru.parohodov.servicearticles.service.dto.ArticleDto;
 
 /**
  * @author Parohodov
@@ -57,14 +58,6 @@ public class ArticleController {
         return modelAndView;
     }
 
-    @GetMapping({"/add", "/add/"})
-    public ModelAndView add(ModelAndView modelAndView) {
-        modelAndView.setStatus(HttpStatus.OK);
-        modelAndView.setViewName("/add");
-        return modelAndView;
-    }
-
-
     @GetMapping("/{id}")
     public ModelAndView fetchById(@PathVariable("id") long id, ModelAndView modelAndView) {
         try {
@@ -78,6 +71,13 @@ public class ArticleController {
         }
         modelAndView.setStatus(HttpStatus.OK);
         modelAndView.setViewName("/article");
+        return modelAndView;
+    }
+
+    @GetMapping({"/add", "/add/"})
+    public ModelAndView add(ModelAndView modelAndView) {
+        modelAndView.setStatus(HttpStatus.OK);
+        modelAndView.setViewName("/add");
         return modelAndView;
     }
 

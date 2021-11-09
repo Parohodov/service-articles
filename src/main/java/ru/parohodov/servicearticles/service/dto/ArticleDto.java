@@ -8,6 +8,7 @@ import ru.parohodov.servicearticles.datasource.entity.Article;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Parohodov
@@ -22,14 +23,7 @@ public class ArticleDto {
     private String archivePath;
     private String subject;
     private Date uploadDate;
-    private String content;
-
-    // This one is need to show work with list
-    public ArticleDto(Article entity) {
-        this.id = entity.getId();
-        this.title = entity.getTitle();
-        this.uploadDate = new Date(entity.getUploadDate());
-    }
+    private List<ContentDto> content;
 
     // FIXME: Use mapping
     public Article toEntity() {
