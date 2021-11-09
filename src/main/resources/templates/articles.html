@@ -7,23 +7,19 @@
 <body>
 <div align="center">
     <h2>Articles</h2>
+    <a href="/articles/add">Add</a>
+    <br/>
+    <hr/>
     <div th:each="article : ${articles}">
         <div style="display: inline-block">
-            <a th:href="@{/articles/{id}(id=${article.getId()})}" th:text="${article.getTitle()}">article</a>
+            <h4 th:text="${article.getTitle()}">title</h4>
         </div>
         <div style="display: inline-block">
-            <p th:text="${article.getUploadDate()}">article</p>
+            <p th:text="${article.getContent()}">article</p>
         </div>
+        <hr/>
     </div>
     <hr/>
-    <div>
-        <form method="POST" enctype="multipart/form-data" action="/articles/">
-            <table>
-                <tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
-                <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
-            </table>
-        </form>
-    </div>
 </div>
 </body>
 </html>

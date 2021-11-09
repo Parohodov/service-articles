@@ -44,7 +44,7 @@ public class FileProcessService {
     public ArticleDto readFile(Path path) {
 
         List<String> lines = readZipFile(path);
-        String title = lines.get(0);
+        String title = lines.get(0).replace(".", "");
         lines.remove(0);
 
         // FIXME: put to a content a list of lines and create a list of paragraphs to display

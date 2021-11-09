@@ -42,7 +42,6 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping( {"", "/"})
-    @ResponseStatus(HttpStatus.OK)
     public ModelAndView fetchALl(ModelAndView modelAndView) {
         try {
             modelAndView.addObject("articles", articleService.getAllArticles());
@@ -57,6 +56,14 @@ public class ArticleController {
         modelAndView.setViewName("/articles");
         return modelAndView;
     }
+
+    @GetMapping({"/add", "/add/"})
+    public ModelAndView add(ModelAndView modelAndView) {
+        modelAndView.setStatus(HttpStatus.OK);
+        modelAndView.setViewName("/add");
+        return modelAndView;
+    }
+
 
     @GetMapping("/{id}")
     public ModelAndView fetchById(@PathVariable("id") long id, ModelAndView modelAndView) {
