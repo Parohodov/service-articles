@@ -5,7 +5,7 @@ Using .bat files:
 - clone project
 - open project root directory
 - run mvn-clean-install.bat - to build project
-- run install-app.bat file to set up application. This command will create and populate ArticleService directory
+- run setup-app.bat file to set up application. This command will create and populate ArticleService directory
 - to run an application => ArticleService\run.bat
 - link to localhost:8080/ or localhost:8080/articles
 

@@ -22,7 +22,7 @@ import ru.parohodov.servicearticles.service.ArticleService;
  * DONE: Uploading, readind
  * DONE: Exception handling
  * DONE: Deploying
- * TODO: Scrypt for deploying SH, Bath,
+ * DONE: bats for deploying
  * TODO: tests
  * TODO: Pagination
  * TODO: Article subject
