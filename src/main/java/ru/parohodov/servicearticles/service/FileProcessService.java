@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import ru.parohodov.servicearticles.config.StorageProperties;
 import ru.parohodov.servicearticles.exception.FileFormatException;
 import ru.parohodov.servicearticles.exception.FileCommonException;
-import ru.parohodov.servicearticles.exception.FileMissingException;
 import ru.parohodov.servicearticles.service.dto.ArticleDto;
 import ru.parohodov.servicearticles.service.dto.ContentDto;
 
@@ -48,8 +47,6 @@ public class FileProcessService {
         String title = lines.get(0).replace(".", "");
         lines.remove(0);
 
-        // FIXME: put to a content a list of lines and create a list of paragraphs to display
-//        String content = lines.stream().collect(Collectors.joining(System.lineSeparator()));
         List<ContentDto> content = lines.stream().map(ContentDto::new).collect(Collectors.toList());
 
         return ArticleDto.builder()

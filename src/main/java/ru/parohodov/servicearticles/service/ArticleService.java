@@ -102,7 +102,8 @@ public class ArticleService {
 
     @PostConstruct
     private void populateDataBase() {
-        List<Path> files = storageService.getAllFiles();
+        Path articleDirectory = storageService.creatDirectory(null);
+        List<Path> files = storageService.getAllFilePath(articleDirectory);
         for (Path file : files) {
             ArticleDto articleDto;
             try {

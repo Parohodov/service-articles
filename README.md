@@ -1,9 +1,11 @@
+To run this application the JRE 8+ is needed to be installed.
+
 Deploying (Windows):
 - clone project
-- cd project location
-- mvn clean install (wrapper is included, no maven needs to be installed)
-- copy servicearticles-0.0.1-SNAPSHOT.jar, application properties and an "artilce" directory (or create it) to a directory where a server will be placed
-- java [-Xloggc:log.txt] -jar servicearticles-0.0.1-SNAPSHOT.jar
+- cd to project location
+- mvnw.cmd clean install - run maven wrapper to build the project
+- copy servicearticles-0.0.1-SNAPSHOT.jar and application properties (and optionally test-articles directory) file to some directory
+- java -jar servicearticles-0.0.1-SNAPSHOT.jar
 - link to localhost:8080/
 
 

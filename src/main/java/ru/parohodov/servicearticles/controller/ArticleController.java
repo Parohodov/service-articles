@@ -13,28 +13,27 @@ import ru.parohodov.servicearticles.exception.FileMissingException;
 import ru.parohodov.servicearticles.exception.FileFormatException;
 import ru.parohodov.servicearticles.exception.FileCommonException;
 import ru.parohodov.servicearticles.service.ArticleService;
-import ru.parohodov.servicearticles.service.dto.ArticleDto;
 
 /**
  * @author Parohodov
  *
  * DONE: Controller
  * DONE: Crud repository
- * DONE: Uploading, readind, deleting files
- * TODO: PUT (?) - Updating - get upload file date and store it if it's different with original one
+ * DONE: Uploading, readind
  * DONE: Exception handling
- * TODO: No Thymeleaf UI
- * TODO: Normal UI
- * TODO: Deploying
+ * DONE: Deploying
+ * TODO: Scrypt for deploying SH, Bath,
  * TODO: tests
- * TODO: Paging
+ * TODO: Pagination
  * TODO: Article subject
  * TODO: Filters for DB
+ * TODO: PUT - get upload file date and replace an original one
  * TODO: Rest
  * TODO: Logging
  * TODO: Entity To DTO Conversion
  * TODO: Authentication
  */
+
 @RequiredArgsConstructor
 //@RestController
 @Controller

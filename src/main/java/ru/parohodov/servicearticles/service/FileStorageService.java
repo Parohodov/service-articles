@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,14 +62,32 @@ public class FileStorageService {
      * @return - List<Path> - list of files stored in a storage
      * @throws - FileCommonException
      */
-    public List<Path> getAllFiles() {
+    public List<Path> getAllFilePath(Path directory) {
         List<Path> files;
-        try (Stream<Path> paths = Files.walk(this.rootLocation)) {
+        try (Stream<Path> paths = Files.walk(directory)) {
             files = paths.filter(Files::isRegularFile).collect(Collectors.toList());
         } catch (IOException e) {
             throw new FileCommonException("Failed to get all files.");
         }
         return files;
+    }
+
+    /** Create directory from a Path passed in a parameter
+     * @return - Path - list of files stored in a storage
+     * @throws - FileCommonException
+     */
+    public Path creatDirectory(Path directoryName) {
+        if (directoryName == null) {
+            directoryName = rootLocation;
+        }
+        try {
+            Files.createDirectory(directoryName);
+        } catch (FileAlreadyExistsException e) {
+            System.out.println("Directory already exists: " + directoryName + ". " + e.getMessage());
+        } catch (IOException e) {
+            throw new FileCommonException("Failed to create directory");
+        }
+        return directoryName;
     }
 
     /**
