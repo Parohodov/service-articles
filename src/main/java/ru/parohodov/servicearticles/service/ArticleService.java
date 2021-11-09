@@ -20,12 +20,13 @@ import java.util.Optional;
 /**
  * @author Parohodov
  *
- * As long as H2 works runtime all data is retrieved from a file system
- * while database keeps id's for a list, files url's and subjects
- * It works because all data needed can be retrieved from file properies
+ * A service that works with a database
  *
- * TODO: JPA Criteria, filter, pagination
- * FIXME: Creating DTO in a single place with the whole banch of parameters
+ * As long as H2 works runtime, all data is retrieved from a file system,
+ * while database keeps id's for a list, files url's and subjects.
+ * That's why file system operations are used from here.
+ *
+ * TODO: filter, JPA Criteria, pagination
  */
 @RequiredArgsConstructor
 @Service
@@ -64,12 +65,14 @@ public class ArticleService {
 
         Optional<Article> result = articleRepository.findByTitle(dto.getTitle());
         if (result.isPresent()) {
-            storageService.delete(storedFile); // FIXME: not necessary (?)
-            throw new FileConflictException("Article already exists: " + dto.getTitle());
+            // If running comes here than store(file) didn't threw an exception => file with such name doesn't exist
+            // But an article with such article name does
+            storageService.delete(storedFile);
+            throw new FileFormatException("Article with such title already exists.");
         }
 
         Article freshArticle = articleRepository.save(dto.toEntity());
-        dto.setId(freshArticle.getId()); // Set DTO id field
+        dto.setId(freshArticle.getId());
         return dto;
     }
 
@@ -84,10 +87,11 @@ public class ArticleService {
         }
     }
 
+    // Returned DTO's id is zero now
     private ArticleDto getDto(long articleId, Path storedFile) {
         ArticleDto dto;
         try {
-            dto = fileProcessService.readFile(storedFile); // DTO id is zero now
+            dto = fileProcessService.readFile(storedFile);
         } catch (FileFormatException e) {
             storageService.delete(storedFile);
             throw new FileFormatException(e.getMessage());
