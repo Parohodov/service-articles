@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author Parohodov
+ * @author Popov Pavel
  *
  * This service stores files on disc in rootLocation inside project root directory.
  */
@@ -36,7 +36,7 @@ public class FileStorageService {
      */
     public Path store(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new FileMissingException("Zip file is missing: " + file.getOriginalFilename());
+            throw new FileMissingException("Zip file is missing.");
         }
 
         Path destinationFile = this.rootLocation.resolve(

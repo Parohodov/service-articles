@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * @author Parohodov
+ * @author Popov Pavel
  */
 public class FileProcessServiceTests {
     private FileProcessService fileProcessService;

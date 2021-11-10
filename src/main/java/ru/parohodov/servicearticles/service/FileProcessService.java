@@ -83,7 +83,7 @@ public class FileProcessService {
             }
             // FIXME: Close entry?
         } catch (IOException e) {
-            throw new FileCommonException("Can not open archive");
+            throw new FileCommonException("Can not open an archive: " + path.getFileName());
         }
 
         return lines;

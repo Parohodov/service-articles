@@ -2,6 +2,8 @@ mkdir ArticleService\articles
 copy test-articles\gilmour.zip ArticleService\articles\
 copy test-articles\strat.zip ArticleService\articles\
 copy test-articles\drz.zip ArticleService\articles\
+copy test-articles\africa-twin.zip ArticleService\articles\
+copy test-articles\fiennes.zip.zip ArticleService\articles\
 
 mkdir ArticleService\test-articles
 xcopy test-articles ArticleService\test-articles\ /s
