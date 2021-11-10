@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author Parohodov
+ * @author Pavel Popov
  */
 @Data
 @Builder

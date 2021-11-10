@@ -7,7 +7,7 @@ import ru.parohodov.servicearticles.service.dto.ArticleDto;
 import java.util.Optional;
 
 /**
- * @author Parohodov
+ * @author Pavel Popov
  */
 public interface ArticleRepository extends PagingAndSortingRepository<Article, Long> {
     Optional<Article> findByTitle(String title);

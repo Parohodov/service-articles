@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 /**
- * @author Parohodov
+ * @author Pavel Popov
  */
 @Data
 @NoArgsConstructor

@@ -7,7 +7,7 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @author Parohodov
+ * @author Pavel Popov
  */
 @NoArgsConstructor
 @AllArgsConstructor

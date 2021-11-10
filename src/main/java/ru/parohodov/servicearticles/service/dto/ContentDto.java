@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author Parohodov
+ * @author Pavel Popov
  */
 @Data
 public class ContentDto {

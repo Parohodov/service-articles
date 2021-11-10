@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * @author Popov Pavel
+ * @author Pavel Popov
  */
 public class FileProcessServiceTests {
     private FileProcessService fileProcessService;
@@ -46,7 +46,7 @@ public class FileProcessServiceTests {
                         .archivePath(path.toString())
                         .subject("?")
                         .uploadDate(dto.getUploadDate()) // Or it would be a different date object
-                        .content(Arrays.asList (new ContentDto("test"), new ContentDto("test")))
+                        .content(Arrays.asList(new ContentDto("test"), new ContentDto("test")))
                         .build()
         ));
     }

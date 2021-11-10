@@ -1,7 +1,7 @@
 package ru.parohodov.servicearticles.exception;
 
 /**
- * @author Parohodov
+ * @author Pavel Popov
  */
 public class FileFormatException extends RuntimeException {
     public FileFormatException(String message) {

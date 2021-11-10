@@ -23,8 +23,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * @author Parohodov
- *
+ * @author Pavel Popov
+ * <p>
  * This service works with what is inside the archives
  */
 @Service
@@ -37,6 +37,7 @@ public class FileProcessService {
 
     /**
      * Reads a given PREVIOUSLY STORED file
+     *
      * @param path - a path to a stored file
      * @return - DTO with id field is zero
      * @throws - FileFormatException, FileCommonException
@@ -105,7 +106,7 @@ public class FileProcessService {
         try {
             attr = Files.readAttributes(path, BasicFileAttributes.class);
         } catch (IOException e) {
-            throw new FileCommonException("Failed to read file time creation");
+            throw new FileCommonException("Failed to read time creation of file : " + path.getFileName());
         }
         return new Date(attr.creationTime().toMillis());
     }

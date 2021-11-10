@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * @author Popov Pavel
- *
+ * @author Pavel Popov
+ * <p>
  * This service stores files on disc in rootLocation inside project root directory.
  */
 @Service
@@ -29,7 +29,9 @@ public class FileStorageService {
         rootLocation = Paths.get(properties.getLocation());
     }
 
-    /** Stores a given file
+    /**
+     * Stores a given file
+     *
      * @param file - a file to be stored
      * @return - a Path to a file stored in a file system
      * @throws - FileMissingException, FileFormatException, FileConflictException, FileCommonException
@@ -58,7 +60,9 @@ public class FileStorageService {
         return destinationFile;
     }
 
-    /** Returns a list of file stored in a current storage defined by a rootLocation field
+    /**
+     * Returns a list of file stored in a current storage defined by a rootLocation field
+     *
      * @return - List<Path> - list of files stored in a storage
      * @throws - FileCommonException
      */
@@ -72,7 +76,9 @@ public class FileStorageService {
         return files;
     }
 
-    /** Create directory from a Path passed in a parameter
+    /**
+     * Create directory from a Path passed in a parameter
+     *
      * @return - Path - list of files stored in a storage
      * @throws - FileCommonException
      */
@@ -92,14 +98,15 @@ public class FileStorageService {
 
     /**
      * Deletes given file
+     *
      * @throws - FileMissingException, FileCommonException
      */
     public void delete(Path file) {
         try {
             Files.delete(file);
-        } catch (NoSuchFileException x) {
+        } catch (NoSuchFileException e) {
             throw new FileMissingException("File not found: " + file.getFileName());
-        } catch (IOException x) {
+        } catch (IOException e) {
             // File permission problems are caught here.
             throw new FileCommonException("Something went wrong.");
         }

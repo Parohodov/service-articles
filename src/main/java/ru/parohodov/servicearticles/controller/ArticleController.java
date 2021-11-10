@@ -15,16 +15,10 @@ import ru.parohodov.servicearticles.exception.FileCommonException;
 import ru.parohodov.servicearticles.service.ArticleService;
 
 /**
- * @author Parohodov
- *
- * DONE: Controller
- * DONE: Crud repository
- * DONE: Uploading, readind
- * DONE: Exception handling
- * DONE: Deploying
- * DONE: bats for deploying
+ * @author Pavel Popov
+ * <p>
  * TODO: tests
- * TODO: clean up archtecture and write it again
+ * TODO: clean up archtecture and write it again. Check file before storing it to splite file and db services. Split file and db exceptions
  * UNDONE: Entity-to-DTO mapping
  * UNDONE: Pagination
  * UNDONE: Article subject, subject relation, articles-manyToOne-subjects
@@ -43,7 +37,7 @@ import ru.parohodov.servicearticles.service.ArticleService;
 public class ArticleController {
     private final ArticleService articleService;
 
-    @GetMapping( {"", "/"})
+    @GetMapping({"", "/"})
     public ModelAndView fetchALl(ModelAndView modelAndView) {
         try {
             modelAndView.addObject("articles", articleService.getAllArticles());
@@ -82,7 +76,7 @@ public class ArticleController {
         return modelAndView;
     }
 
-    @PostMapping( {"", "/"})
+    @PostMapping({"", "/"})
     public ModelAndView create(@RequestParam("file") MultipartFile fileName, ModelAndView modelAndView) {
         try {
             articleService.saveArticle(fileName);
@@ -97,14 +91,6 @@ public class ArticleController {
         }
 
         modelAndView.setStatus(HttpStatus.CREATED);
-        modelAndView.setViewName("redirect:/articles");
-        return modelAndView;
-    }
-
-    @DeleteMapping("/{id}")
-    public ModelAndView delete(@PathVariable("id") long id, ModelAndView modelAndView) {
-        articleService.deleteById(id);
-        modelAndView.setStatus(HttpStatus.OK);
         modelAndView.setViewName("redirect:/articles");
         return modelAndView;
     }

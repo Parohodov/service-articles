@@ -1,7 +1,7 @@
 package ru.parohodov.servicearticles.exception;
 
 /**
- * @author Parohodov
+ * @author Pavel Popov
  */
 public class FileMissingException extends RuntimeException {
     public FileMissingException(String message) {
