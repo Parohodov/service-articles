@@ -45,7 +45,7 @@ public class FileProcessServiceTests {
                         .title("Test title")
                         .archivePath(path.toString())
                         .subject("?")
-                        .uploadDate(dto.getUploadDate()) // Or it would be a different date object
+                        .uploadDate(date)
                         .content(Arrays.asList(new ContentDto("test"), new ContentDto("test")))
                         .build()
         ));

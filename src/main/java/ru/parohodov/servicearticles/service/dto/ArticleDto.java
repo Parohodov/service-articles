@@ -33,4 +33,27 @@ public class ArticleDto {
                 this.uploadDate.getTime()
         );
     }
+
+    public boolean equals(Object otherObject) {
+        if (otherObject == null) {
+            return false;
+        }
+
+        if (this == otherObject) {
+            return true;
+        }
+
+        if (!(otherObject instanceof ArticleDto)) {
+            return false;
+        }
+
+        ArticleDto other = (ArticleDto) otherObject;
+
+        return this.id == other.id
+                && this.title.equals(other.getTitle())
+                && this.archivePath.equals(other.getArchivePath())
+                && this.subject.equals(other.getSubject())
+                && this.uploadDate.getTime() == other.uploadDate.getTime()
+                && this.content.equals(other.content);
+    }
 }
