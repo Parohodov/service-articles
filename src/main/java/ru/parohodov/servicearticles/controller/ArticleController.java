@@ -24,14 +24,16 @@ import ru.parohodov.servicearticles.service.ArticleService;
  * DONE: Deploying
  * DONE: bats for deploying
  * TODO: tests
- * TODO: Pagination
- * TODO: Article subject
- * TODO: Filters for DB
- * TODO: PUT - get upload file date and replace an original one
- * TODO: Rest
- * TODO: Logging
- * TODO: Entity To DTO Conversion
- * TODO: Authentication
+ * TODO: clean up archtecture and write it again
+ * UNDONE: Entity-to-DTO mapping
+ * UNDONE: Pagination
+ * UNDONE: Article subject, subject relation, articles-manyToOne-subjects
+ * UNDONE: Filters for DB
+ * UNDONE: PUT - get upload file date and replace an original one
+ * UNDONE: Rest
+ * UNDONE: Logging
+ * UNDONE: Entity To DTO Conversion
+ * UNDONE: Authentication
  */
 
 @RequiredArgsConstructor

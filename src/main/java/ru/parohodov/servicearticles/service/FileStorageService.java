@@ -36,7 +36,7 @@ public class FileStorageService {
      */
     public Path store(MultipartFile file) {
         if (file.isEmpty()) {
-            throw new FileMissingException("Zip file is missing");
+            throw new FileMissingException("Zip file is missing: " + file.getOriginalFilename());
         }
 
         Path destinationFile = this.rootLocation.resolve(
@@ -62,7 +62,7 @@ public class FileStorageService {
      * @return - List<Path> - list of files stored in a storage
      * @throws - FileCommonException
      */
-    public List<Path> getAllFilePath(Path directory) {
+    public List<Path> getAllFilePaths(Path directory) {
         List<Path> files;
         try (Stream<Path> paths = Files.walk(directory)) {
             files = paths.filter(Files::isRegularFile).collect(Collectors.toList());

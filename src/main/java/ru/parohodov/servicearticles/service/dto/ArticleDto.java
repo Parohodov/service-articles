@@ -25,7 +25,6 @@ public class ArticleDto {
     private Date uploadDate;
     private List<ContentDto> content;
 
-    // FIXME: Use mapping
     public Article toEntity() {
         return new Article(
                 this.title,

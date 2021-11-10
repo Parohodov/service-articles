@@ -1,5 +1,6 @@
 package ru.parohodov.servicearticles.config;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Parohodov
  */
 @NoArgsConstructor
+@AllArgsConstructor
 @ConfigurationProperties(prefix = "storage")
 public class StorageProperties {
     /**

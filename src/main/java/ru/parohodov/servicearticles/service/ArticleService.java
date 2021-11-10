@@ -24,7 +24,6 @@ import java.util.Optional;
  *
  * As long as H2 works runtime, all data is retrieved from a file system,
  * while database keeps id's for a list, files url's and subjects.
- * That's why file system operations are used from here.
  *
  * TODO: filter, JPA Criteria, pagination
  */
@@ -59,7 +58,11 @@ public class ArticleService {
 
     @Transactional
     public ArticleDto saveArticle(MultipartFile file) {
-        Path storedFile = storageService.store(file); // First storage the file (to be able to use ZipFile)
+        // First storage the file (to be able to use ZipFile)
+        // FIXME: check that multipart file BEFORE storing it
+        // FIXME: so you don't need to catch unnecessary exceptions and can split up database and file processing services
+        // FIXME: and DTO doesn't need to keep id which is not of its business
+        Path storedFile = storageService.store(file);
 
         ArticleDto dto = getDto(0, storedFile);
 
@@ -81,7 +84,7 @@ public class ArticleService {
         Optional<Article> result = articleRepository.findById(id);
         if (result.isPresent()) {
             Path path = Paths.get(result.get().getArchivePath());
-            // TODO: handling exceptions
+            // TODO: handle exceptions
             storageService.delete(path);
             articleRepository.deleteById(id);
         }
@@ -98,7 +101,7 @@ public class ArticleService {
         } catch (FileCommonException e) {
             storageService.delete(storedFile);
             throw new FileCommonException(e.getMessage());
-        } // FIXME: DRY violation in catch blocks
+        }
 
         dto.setId(articleId);
         return dto;
@@ -107,7 +110,7 @@ public class ArticleService {
     @PostConstruct
     private void populateDataBase() {
         Path articleDirectory = storageService.creatDirectory(null);
-        List<Path> files = storageService.getAllFilePath(articleDirectory);
+        List<Path> files = storageService.getAllFilePaths(articleDirectory);
         for (Path file : files) {
             ArticleDto articleDto;
             try {

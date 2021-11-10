@@ -66,7 +66,7 @@ public class FileProcessService {
             ZipEntry entry = entries.nextElement();
 
             if (entries.hasMoreElements()) {
-                throw new FileFormatException("Too much article files inside an archive: " + path.getFileName());
+                throw new FileFormatException("Too many article files inside an archive: " + path.getFileName());
             }
 
             if (!entry.getName().equals(predefinedFileName)) {
